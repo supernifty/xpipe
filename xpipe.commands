@@ -1,3 +1,4 @@
 # test commands
 echo "MSG"
-exit 1
+echo "MSG again"
+exit 0

@@ -33,7 +33,7 @@ def run_command(line, command, config):
     log('INFO', 'running line {}: {}: done'.format(line, configured_command))
     return True
 
-def run_pipeline(config_fh, commands):
+def run_pipeline(config_fh, commands, resume=0):
     log('INFO', 'xpipe is starting')
     # read config
     config = {}
@@ -50,6 +50,9 @@ def run_pipeline(config_fh, commands):
         if command.startswith('#') or len(command) == 0:
             log('INFO', command) # comment
             continue
+        if line + 1 < resume:
+            log('INFO', 'skipping line {}: {}'.format(line + 1, command)) 
+            continue
         if len(command) == 0:
             continue
         if not run_command(line + 1, command, config):
@@ -61,6 +64,7 @@ def run_pipeline(config_fh, commands):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Extremely simple pipeline')
     parser.add_argument('--config', required=True, help='configuration options')
+    parser.add_argument('--resume', required=False, type=int, default=0, help='line number in file to start from')
     args = parser.parse_args()
     # now do each stage...
-    run_pipeline(config_fh=open(args.config, 'r'), commands=sys.stdin)
+    run_pipeline(config_fh=open(args.config, 'r'), commands=sys.stdin, resume=args.resume)
