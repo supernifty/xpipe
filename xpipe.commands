@@ -1,0 +1,3 @@
+# test commands
+echo "MSG"
+exit 1
