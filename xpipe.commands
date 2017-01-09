@@ -1,4 +1,4 @@
 # test commands
-echo "MSG"
-echo "MSG again"
+echo "{MSG}"
+echo "{MSG} again"
 exit 0

@@ -16,7 +16,7 @@ def log(sev, msg):
 def run_command(line, command, config):
     configured_command = command
     for key in config:
-       configured_command = configured_command.replace(key, config[key]) 
+       configured_command = configured_command.replace('{{{}}}'.format(key), config[key]) # {KEY} -> keyvalue
     log('INFO', 'running line {}: {} from template {}...'.format(line, configured_command, command))
 
     result = os.system(configured_command)
@@ -45,6 +45,8 @@ def run_pipeline(config_fh, commands, resume=0):
     log('INFO', 'Loaded {} configuration settings'.format(len(config)))
 
     # run commands
+    ok = True
+    line = 0
     for line, command in enumerate(commands):
         command = command.strip()
         if command.startswith('#') or len(command) == 0:
@@ -56,10 +58,12 @@ def run_pipeline(config_fh, commands, resume=0):
         if len(command) == 0:
             continue
         if not run_command(line + 1, command, config):
-            # problem
+            ok = False # problem
             break
     
     log('INFO', 'xpipe is finished')
+    if not ok:
+        log('ERROR', 'xpipe encountered an error on line {}'.format(line + 1))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Extremely simple pipeline')
